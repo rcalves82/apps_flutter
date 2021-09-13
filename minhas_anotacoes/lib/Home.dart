@@ -18,75 +18,89 @@ class _HomeState extends State<Home> {
   var _db = AnotacaoHelper();
   List<Anotacao> _anotacoes = List<Anotacao>();
 
-  _exibirTelaCadastro({Anotacao anotacao}){
-
+  _exibirTelaCadastro({Anotacao anotacao}) {
     String textoSalvarAtualizar = "";
-    if(anotacao == null){
+    if (anotacao == null) {
       _tituloController.text = "";
       _descricaoController.text = "";
       textoSalvarAtualizar = "Salvar";
-    }else{//atualizar
+    } else {
+      //atualizar
       _tituloController.text = anotacao.titulo;
       _descricaoController.text = anotacao.descricao;
       textoSalvarAtualizar = "Atualizar";
     }
 
     showDialog(
-      context: context,
-      builder: (context){
-        return AlertDialog(
-          title: Text('$textoSalvarAtualizar anotação'),
-          content: Column(
-            //define o tamanho do componente na tela
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _tituloController,
-                autofocus: true,
-                decoration: InputDecoration(
-                  labelText: "Título",
-                  hintText: "Digite título..."
-                ),
-              ),
-              TextField(
-                controller: _descricaoController,
-                decoration: InputDecoration(
-                    labelText: "Descrição",
-                    hintText: "Digite descrição..."
-                ),
-              ),
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('$textoSalvarAtualizar anotação'),
+            content: Column(
+                  //define o tamanho do componente na tela
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                              Expanded(
+                                child: Container(
+                                  child: TextField(
+                                    controller: _tituloController,
+                                    autofocus: true,
+                                    decoration: InputDecoration(
+                                        labelText: "Título", hintText: "Digite título..."),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                  child:  Container(
+                                    child: TextField(
+                                        controller: _descricaoController,
+                                        decoration: InputDecoration(
+                                          labelText: "Descrição",
+                                          hintText: "Digite descrição",
+                                        )
+                                    ),
+                                  )
+                              ),
+                            ],
+                        ),
+            actions: [
+              TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.lightBlue,
+                    elevation: 15,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    "Cancelar",
+                    style: TextStyle(color: Colors.white),
+                  )),
+              TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.lightBlue,
+                    elevation: 15,
+                  ),
+                  onPressed: () {
+                    //salvar
+                    _salvarAtualizarAnotacao(anotacaoSelecionada: anotacao);
+
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    textoSalvarAtualizar,
+                    style: TextStyle(color: Colors.white),
+                  )),
             ],
-          ),
-          actions: [
-            FlatButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text("Cancelar")
-            ),
-            FlatButton(
-                onPressed: () {
-
-                  //salvar
-                  _salvarAtualizarAnotacao(anotacaoSelecionada: anotacao);
-
-                  Navigator.pop(context);
-                },
-                child: Text(textoSalvarAtualizar)
-            )
-          ],
-        );
-      }
-    );
+          );
+        });
   }
 
   _recuperarAnotacoes() async {
-
     List anotacoesRecuperadas = await _db.recuperarAnotacoes();
 
     List<Anotacao> listaTemporaria = List<Anotacao>();
-    for ( var item in anotacoesRecuperadas){
-
-        Anotacao anotacao = Anotacao.fromMap(item);
-        listaTemporaria.add(anotacao);
+    for (var item in anotacoesRecuperadas) {
+      Anotacao anotacao = Anotacao.fromMap(item);
+      listaTemporaria.add(anotacao);
     }
 
     setState(() {
@@ -95,28 +109,34 @@ class _HomeState extends State<Home> {
     listaTemporaria = null;
 
     // print("Lista anotacoes: " + anotacoesRecuperadas.toString());
-
   }
 
-  _salvarAtualizarAnotacao({Anotacao anotacaoSelecionada}) async{
-
+  _salvarAtualizarAnotacao({Anotacao anotacaoSelecionada}) async {
     String titulo = _tituloController.text;
     String descricao = _descricaoController.text;
 
-    if(titulo.isEmpty || descricao.isEmpty){
-      key.currentState.showSnackBar(SnackBar(
+    if (titulo.isEmpty || descricao.isEmpty) {
+      //Aqui código de Snackbar flutter 1
+      /*key.currentState.showSnackBar(SnackBar(
+          content: Text('Campos título e descrição são obrigatórios.'),
+          duration: Duration(milliseconds: 3),
+        ));*/
+      //Aqui código de Snackbar flutter 2
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Campos título e descrição são obrigatórios.'),
-        duration: Duration(milliseconds: 3),
+        duration: Duration(seconds: 2),
       ));
       _exibirTelaCadastro();
       // print("data atual " + DateTime.now().toString());
-    } else if(anotacaoSelecionada == null){
-      Anotacao anotacao = Anotacao(titulo, descricao, DateTime.now().toString());
+    } else if (anotacaoSelecionada == null) {
+      Anotacao anotacao =
+          Anotacao(titulo, descricao, DateTime.now().toString());
       int resultado = await _db.salvarAnotacao(anotacao);
-    }else{//atualizar
-      anotacaoSelecionada.titulo    = titulo;
+    } else {
+      //atualizar
+      anotacaoSelecionada.titulo = titulo;
       anotacaoSelecionada.descricao = descricao;
-      anotacaoSelecionada.data      = DateTime.now().toString();
+      anotacaoSelecionada.data = DateTime.now().toString();
       int resultado = await _db.atualizarAnotacao(anotacaoSelecionada);
     }
     // debugPrint("salvar anotacao: " + resultado.toString());
@@ -125,12 +145,10 @@ class _HomeState extends State<Home> {
     _tituloController.clear();
     _descricaoController.clear();
     _recuperarAnotacoes();
-
-
   }
 
   //Metodo para formatar data
-  _formatarData(String data){
+  _formatarData(String data) {
     initializeDateFormatting("pt_BR");
 
     //Year -> y Month -> M (M maisculo representa o Mês e m minusculo minuto Day -> d
@@ -150,95 +168,99 @@ class _HomeState extends State<Home> {
     _recuperarAnotacoes();
   }
 
-
   @override
   void initState() {
     super.initState();
     _recuperarAnotacoes();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: key,
       appBar: AppBar(
         title: Text("Minhas anotações"),
-        backgroundColor: Colors.lightGreen,
+        backgroundColor: Colors.deepPurpleAccent,
       ),
       body: Column(
         children: [
           Expanded(
               child: ListView.builder(
-                  itemCount: _anotacoes.length,
-                  itemBuilder: (context, index) {
+            itemCount: _anotacoes.length,
+            itemBuilder: (context, index) {
+              final anotacao = _anotacoes[index];
 
-                    final anotacao = _anotacoes[index];
-
-                    return Card(
-                      child: ListTile(
-                        title: Text(anotacao.titulo),
-                        subtitle: Text("${_formatarData(anotacao.data)} - ${anotacao.descricao}"),
-                        //Ações nas laterais do APP
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                _exibirTelaCadastro(anotacao: anotacao);
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 16),
-                                child: Icon(
-                                  Icons.edit,
-                                  color: Colors.green
-                                ),
-                              ),
-
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: Text("Deseja excluir essa anotação?"),
-                                        actions: [
-                                          FlatButton(
-                                              child: Text("Não"),
-                                              onPressed: () => Navigator.pop(context),
-                                          ),
-                                          FlatButton(
-                                            child: Text("Sim"),
-                                            onPressed: () {
-                                              _removerAnotacao(anotacao.id);
-                                              Navigator.pop(context);
-                                              },
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                );
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 0),
-                                child: Icon(
-                                    Icons.remove_circle,
-                                    color: Colors.red
-                                ),
-                              ),
-
-                            )
-                          ],
+              return Card(
+                child: ListTile(
+                  title: Text(anotacao.titulo),
+                  subtitle: Text(
+                      "${_formatarData(anotacao.data)} - ${anotacao.descricao}"),
+                  //Ações nas laterais do APP
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _exibirTelaCadastro(anotacao: anotacao);
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 16),
+                          child: Icon(Icons.edit, color: Colors.green),
                         ),
                       ),
-                    );
-                  },
-              )
-
-          )
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text("Deseja excluir essa anotação?"),
+                                actions: [
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: Colors.lightBlue,
+                                      elevation: 15,
+                                    ),
+                                    child: Text(
+                                      "Não",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: Colors.lightBlue,
+                                      elevation: 15,
+                                    ),
+                                    child: Text(
+                                      "Sim",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    onPressed: () {
+                                      _removerAnotacao(anotacao.id);
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 0),
+                          child: Icon(Icons.remove_circle, color: Colors.red),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+          ))
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.deepPurpleAccent,
         child: Icon(Icons.add),
         onPressed: () {
           _exibirTelaCadastro();
