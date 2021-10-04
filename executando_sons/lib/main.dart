@@ -64,7 +64,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(title: Text("Executando sons"),),
+      appBar: AppBar(title: Text("Ouvindo Músicas"), backgroundColor: Colors.redAccent,),
       body: Column(
         children: [
           //Criando barra de volume
@@ -72,6 +72,7 @@ class _HomeState extends State<Home> {
               value: volume,
               min: 0,
               max: 1,
+              activeColor: Colors.redAccent,
               // divisions: 10,
               onChanged: (novoVolume) {
                   setState(() {
