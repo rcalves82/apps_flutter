@@ -17,8 +17,8 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
+// Inserir na class o metodo SingleTickerProviderStateMixin para executar o TabBar
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-
   //Criar uma tabController
   late TabController _tabController;
 
@@ -28,11 +28,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     super.initState();
 
     _tabController = TabController(
-        length: 3,
-        vsync: this,
-        initialIndex: 0,
+      length: 3,
+      vsync: this,
+      initialIndex: 0,
     );
-
   }
 
   @override
@@ -58,19 +57,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               icon: Icon(Icons.email),
             ),
             Tab(
-              // text: "Conta",
-                icon: Icon(Icons.account_circle)
-            )
+                // text: "Conta",
+                icon: Icon(Icons.account_circle))
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          PrimeiraPagina(),
-          SegundaPagina(),
-          TerceiraPagina()
-        ],
+        children: [PrimeiraPagina(), SegundaPagina(), TerceiraPagina()],
       ),
     );
   }
