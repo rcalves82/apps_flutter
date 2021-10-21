@@ -37,32 +37,23 @@ class _HomeState extends State<Home> {
           return AlertDialog(
             title: Text('$textoSalvarAtualizar anotação'),
             content: Column(
-                  //define o tamanho do componente na tela
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                              Expanded(
-                                child: Container(
-                                  child: TextField(
-                                    controller: _tituloController,
-                                    autofocus: true,
-                                    decoration: InputDecoration(
-                                        labelText: "Título", hintText: "Digite título..."),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                  child:  Container(
-                                    child: TextField(
-                                        controller: _descricaoController,
-                                        decoration: InputDecoration(
-                                          labelText: "Descrição",
-                                          hintText: "Digite descrição",
-                                        )
-                                    ),
-                                  )
-                              ),
-                            ],
-                        ),
+              //define o tamanho do componente na tela
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _tituloController,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                      labelText: "Título", hintText: "Digite título..."),
+                ),
+                TextField(
+                    controller: _descricaoController,
+                    decoration: InputDecoration(
+                      labelText: "Descrição",
+                      hintText: "Digite descrição",
+                    )),
+              ],
+            ),
             actions: [
               TextButton(
                   style: TextButton.styleFrom(
